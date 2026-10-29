@@ -1,0 +1,14 @@
+# Actions of the game => keys / gamepads / touch (JumPHP\Input\ActionMap). Read by App\Input\Pad.
+# The Master System joypad: a d-pad and two buttons that both jump. Letters are left free for the name entry
+# of a new best time (no WASD).
+actions:
+  left: [Left, pad0:left, touch:left]
+  right: [Right, pad0:right, touch:right]
+  up: [Up, pad0:up, touch:up]
+  down: [Down, pad0:down, touch:down]
+  jump: [Space, pad0:a, pad0:b, pad0:x, pad0:y, touch:tap]
+  start: [Return, Keypad Enter, pad0:start]
+  back: [Escape, pad0:select]
+  # the engine's defaults, unused by the game (their keys stay free)
+  confirm: [Return]
+  pause: []

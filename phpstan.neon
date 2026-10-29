@@ -1,0 +1,21 @@
+# Static analysis of the game (bin/jumphp test <game> runs it when the engine dev tools are installed:
+# bin/jumphp test engine once). Level 5: wrong types, unknown methods, missing arguments.
+parameters:
+    level: 5
+    paths: [src]
+    scanFiles: [../../engine/stubs/sdl.stub.php, ../../engine/stubs/async.stub.php, ../../engine/stubs/opengl.stub.php, ../../engine/stubs/openal.stub.php]
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - identifier: trait.unused
+        # the code of the original project: SDL_Rects built empty then filled (the binding allows it), and its style
+        - message: '#Class SDL_Rect constructor invoked with 0 parameters#'
+        - identifier: property.onlyWritten
+        - identifier: method.unused
+        - identifier: match.unhandled
+        - identifier: method.void
+        - identifier: constructor.unusedParameter
+        - identifier: function.alreadyNarrowedType
+        - identifier: booleanNot.alwaysFalse
+        - identifier: nullsafe.neverNull
+        - identifier: closure.unusedUse
+        - identifier: return.phpDocType

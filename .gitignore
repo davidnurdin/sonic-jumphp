@@ -1,0 +1,9 @@
+/vendor/
+/var/*
+!/var/.gitkeep
+/dist/
+/.build/
+/cache/
+# graphics, levels, music, sounds, font: from the ROM / the original project, not redistributed here
+# (private files on the playground; tools/import-assets.sh rebuilds them from a Sonic PHP checkout)
+/assets/

@@ -1,0 +1,10 @@
+# Symfony dependency injection. The game's only JumPHP scene (App\Scene\GameScene) is a service; it builds the
+# original game's objects itself (App\Game and the rest of src/ are plain classes).
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  App\Scene\:
+    resource: '../src/Scene/*'

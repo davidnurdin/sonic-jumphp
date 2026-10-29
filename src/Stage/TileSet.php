@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Stage;
+
+use App\Gfx\Gfx;
+
+class TileSet
+{
+    private array $tiles = [];
+    /** For each block: which of the level's textures has it (a strip cut every 4064px, or one sheet). */
+    private array $textureIndex = [];
+    private int $tileWidth = 32;
+    private int $tileHeight = 32;
+
+    public function __construct(private Gfx $sdl)
+    {
+
+    }
+
+    public function generateTiles($textures): void {
+
+        $this->tiles = [];
+        $this->textureIndex = [];
+
+        $width = $height = 0;
+//        \SDL_QueryTexture($texture, $format , $access , $width, $height);
+
+        foreach ($textures as $texture) {
+            $width += $texture['width'];
+            $height += $texture['height'];
+        }
+
+        // $texture = $texture['texture'] ;
+        $maxWidth = floor(4096 / 32) * 32; // = 4064
+
+        for ($y = 0; $y < $height; $y += $this->tileHeight) {
+            for ($x = 0; $x < $width; $x += $this->tileWidth) {
+                // found $textureTileset
+                $indexTexture = (int)floor($x / $maxWidth);
+                $tileRect = new \SDL_Rect();
+                $tileRect->x = $x - ($indexTexture * $maxWidth);
+                $tileRect->y = $y;
+                $tileRect->w = $this->tileWidth;
+                $tileRect->h = $this->tileHeight;
+                $this->tiles[] = $tileRect;
+                $this->textureIndex[] = $indexTexture;
+            }
+        }
+    }
+
+    public function getTile(int $index): ?\SDL_Rect {
+        if (isset($this->tiles[$index]) === false) {
+            return null;
+        }
+
+        return $this->tiles[$index];
+    }
+
+    public function getTextureIndex(int $index): int
+    {
+        return $this->textureIndex[$index] ?? 0;
+    }
+
+    public function getTiles()
+    {
+        return $this->tiles;
+    }
+
+    public function getWidth()
+    {
+        return $this->tileWidth;
+    }
+
+    public function getHeight()
+    {
+        return $this->tileHeight;
+    }
+
+    /** Registered only: loaded with its level (LevelManager), see Sdl::registerTexture(). */
+    public function loadTileSet(string $name, string $path, string $group)
+    {
+        $this->sdl->registerTexture($name, $path, $group);
+    }
+
+
+}
