@@ -4,6 +4,9 @@ game:
   title: "SONIC PHP"
   version: 1.0.0
   description: "A fan remake of the Master System hedgehog platformer, written in PHP: the six zones, the bosses, the special stages, best times and ghosts, and matches against computer runners."
+  descriptions:                 # the description in the playground's languages (jumphp.net shows the visitor's)
+    fr: "Un remake fan du jeu de plates-formes du hérisson sur Master System, écrit en PHP : les six zones, les boss, les special stages, les meilleurs temps et les fantômes, et des courses contre des coureurs ordinateur."
+    en: "A fan remake of the Master System hedgehog platformer, written in PHP: the six zones, the bosses, the special stages, best times and ghosts, and matches against computer runners."
   # the original window: a view about 426 px high (zoom 1), as wide as the window allows (Game::updateView
   # resizes JumPHP's view to the window's ratio; 256x192, the Master System screen, with keypad *)
   width: 840
