@@ -4,6 +4,9 @@ A fan remake of the Master System hedgehog platformer (1991), written in PHP, ru
 [JumPHP](https://github.com/davidnurdin/jumPhp): on the desktop and in the browser (PHP compiled to WebAssembly).
 Ported from [Sonic PHP](https://github.com/davidnurdin/sonicGamePhp).
 
+**Play it: [jumphp.net/sonic](https://jumphp.net/sonic)** · the complete version, with online multiplayer
+(up to 6 players, rooms, chat, replays): [sonic.mimichat.fr](https://sonic.mimichat.fr)
+
 - the six zones and their bosses, the special stages, the ending;
 - best times and a ghost of your fastest run (OPTIONS > GHOST);
 - local matches against computer runners: race, flag, rings, deathmatch;

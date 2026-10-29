@@ -84,6 +84,15 @@ debug overlay F8, fullscreen F12.
 - Brand words are out of identifiers and file names (sonic -> hero, eggman / robotnik -> doctor, texture names,
   option key `versusRunners`); the texts on screen are unchanged.
 
+## Web site (`site/`)
+
+The game's home page on the playground (French): `site/index.html` (one page, CSS inline), `robots.txt`,
+`sitemap.xml`, `images/` made by `tools/site/shots.sh` (headless screenshots in `var/site/`, then
+`tools/site/make-images.py`: game pictures halved pixel for pixel from the 1680x852 window, the ones with window
+text smoothed, the boss without the locked camera's black bands, the icons from the map's lives icon, `og.png`
+with the game's font). It links to the complete version, https://sonic.mimichat.fr (online multiplayer).
+Check: `bin/jumphp build:site sonic && bin/jumphp siteshot sonic`.
+
 ## Non-obvious
 
 - The engine's view size changes at run time: never cache `$r->getWidth()`; read `View`.

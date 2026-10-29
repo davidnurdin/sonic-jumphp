@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>SONIC PHP – le Sonic Master System en PHP, jouable en ligne gratuitement</title>
+	<meta name="description" content="Jouez gratuitement au Sonic de la Master System dans votre navigateur, refait en PHP : les six zones, les boss, les niveaux spéciaux, les meilleurs temps et des courses contre des bots. Clavier, manette ou écran tactile." />
+	<link rel="canonical" href="https://{{DOMAIN}}/" />
+	<meta name="robots" content="index, follow, max-image-preview:large" />
+	<meta name="theme-color" content="#00aaff" />
+	<link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png" />
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:locale" content="fr_FR" />
+	<meta property="og:site_name" content="SONIC PHP" />
+	<meta property="og:title" content="SONIC PHP – le Sonic Master System, jouable en ligne" />
+	<meta property="og:description" content="Le Sonic de la Master System (1991) refait en PHP : six zones, les boss, les niveaux spéciaux et des courses contre des bots, gratuit dans le navigateur." />
+	<meta property="og:url" content="https://{{DOMAIN}}/" />
+	<meta property="og:image" content="https://{{DOMAIN}}/images/og.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Sonic qui saute à Green Hill, à côté du logo du jeu" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="SONIC PHP – le Sonic Master System, jouable en ligne" />
+	<meta name="twitter:description" content="Six zones, les boss, les niveaux spéciaux et des courses contre des bots, dans le navigateur." />
+	<meta name="twitter:image" content="https://{{DOMAIN}}/images/og.png" />
+
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@graph": [
+			{
+				"@type": "VideoGame",
+				"@id": "https://{{DOMAIN}}/#game",
+				"name": "SONIC PHP",
+				"alternateName": "Sonic the Hedgehog (Master System) – remake en PHP",
+				"url": "https://{{DOMAIN}}/",
+				"image": "https://{{DOMAIN}}/images/og.png",
+				"screenshot": [
+					"https://{{DOMAIN}}/images/level-1.png",
+					"https://{{DOMAIN}}/images/level-7.png",
+					"https://{{DOMAIN}}/images/special.png",
+					"https://{{DOMAIN}}/images/versus.png"
+				],
+				"description": "Remake de fan du Sonic de la Master System, écrit en PHP et jouable dans le navigateur : les six zones et leurs boss, les niveaux spéciaux, la fin, les meilleurs temps avec un fantôme, et des courses contre des bots.",
+				"genre": ["Plates-formes", "Action", "Rétro"],
+				"gamePlatform": ["Navigateur web", "Ordinateur", "Mobile"],
+				"applicationCategory": "Game",
+				"operatingSystem": "Tout navigateur récent",
+				"playMode": ["SinglePlayer", "MultiPlayer"],
+				"numberOfPlayers": {"@type": "QuantitativeValue", "minValue": 1, "maxValue": 1},
+				"inLanguage": ["fr", "en"],
+				"isAccessibleForFree": true,
+				"offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR", "availability": "https://schema.org/InStock"},
+				"codeRepository": "https://github.com/davidnurdin/sonic-jumphp",
+				"sameAs": "https://sonic.mimichat.fr/",
+				"potentialAction": {"@type": "PlayAction", "target": "https://{{DOMAIN}}/play/"}
+			},
+			{
+				"@type": "FAQPage",
+				"mainEntity": [
+					{"@type": "Question", "name": "Faut-il installer quelque chose pour jouer ?",
+					 "acceptedAnswer": {"@type": "Answer", "text": "Non : le jeu tourne dans le navigateur, sur ordinateur comme sur téléphone. Le premier chargement télécharge environ 25 Mo (PHP en WebAssembly, les niveaux, les graphismes et la musique), ensuite tout est en cache."}},
+					{"@type": "Question", "name": "Quelle différence avec la version complète ?",
+					 "acceptedAnswer": {"@type": "Answer", "text": "La version complète, sur sonic.mimichat.fr, ajoute le multijoueur en ligne jusqu'à 6 joueurs (salons publics ou privés, discussion) et les replays. Cette version-ci est le même jeu porté sur le moteur JumPHP, pour jouer seul ou contre des bots."}},
+					{"@type": "Question", "name": "Comment joue-t-on ?",
+					 "acceptedAnswer": {"@type": "Answer", "text": "Flèches pour courir, regarder en haut et se rouler en boule, Espace pour sauter, Entrée pour les menus et la pause, Échap pour revenir au titre. Une manette marche aussi ; sur téléphone, une croix et des boutons apparaissent à l'écran."}}
+				]
+			}
+		]
+	}
+	</script>
+
+	<style>
+		:root {
+			--sky: #00aaff;
+			--night: #000055;
+			--night-deep: #00002a;
+			--ink: #f2f6ff;
+			--muted: #b4c4f0;
+			--panel: #0a1470;
+			--line: #2a3fb0;
+			--yellow: #ffd800;
+			--red: #e00000;
+			--cyan: #55ffff;
+			--blue: #0055ff;
+			--earth: #ffaa00;
+			--earth-dark: #aa5500;
+			--grass: #00aa00;
+		}
+		* { box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+		body {
+			margin: 0;
+			background: var(--night-deep);
+			background-image: linear-gradient(180deg, var(--night) 0, var(--night-deep) 1400px);
+			color: var(--ink);
+			font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+		}
+		img { image-rendering: pixelated; image-rendering: crisp-edges; max-width: 100%; height: auto; display: block; }
+		img.smooth { image-rendering: auto; }
+		a { color: var(--cyan); }
+		.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+		.pixel { font-family: ui-monospace, "Cascadia Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+		/* the ground of Green Hill: grass over a checkerboard */
+		.ground { height: 30px; border-top: 6px solid var(--grass); background: conic-gradient(var(--earth) 25%, var(--earth-dark) 0 50%, var(--earth) 0 75%, var(--earth-dark) 0) 0 0 / 24px 24px; }
+
+		header.hero { padding: 40px 0 48px; text-align: center; background: linear-gradient(180deg, #0088ee 0, var(--sky) 55%, #55ccff 100%); }
+		.hero h1 { font-size: clamp(38px, 8vw, 72px); line-height: 1.05; margin: 0; color: var(--yellow); text-shadow: 4px 4px 0 var(--blue), 8px 8px 0 #00226a; }
+		.hero .sub { margin: 16px auto 0; max-width: 700px; font-size: clamp(17px, 2.2vw, 20px); color: #fff; text-shadow: 0 2px 0 #0050a0; }
+		.actions { margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 22px; }
+		.cta { display: inline-block; padding: 18px 34px; background: var(--yellow); color: #111; text-decoration: none; font-weight: 800; font-size: 22px; border: 4px solid #111; box-shadow: 6px 6px 0 var(--red); transition: transform .08s; }
+		.cta:hover, .cta:focus-visible { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--red); }
+		.cta.alt { background: #fff; font-size: 17px; padding: 14px 22px; box-shadow: 6px 6px 0 var(--blue); align-self: center; }
+		.cta.alt:hover, .cta.alt:focus-visible { box-shadow: 8px 8px 0 var(--blue); }
+		.hero .note { margin-top: 18px; font-size: 14px; color: #ecf8ff; text-shadow: 0 1px 0 #0050a0; }
+		.hero .screen { margin: 36px auto 0; width: 100%; max-width: 840px; border: 6px solid #111; box-shadow: 0 0 0 4px #fff, 0 20px 50px rgba(0, 0, 40, .45); }
+
+		section { padding: 56px 0; }
+		section + section { border-top: 2px solid var(--line); }
+		h2 { font-size: clamp(22px, 3.4vw, 32px); margin: 0 0 18px; color: var(--yellow); }
+		h3 { margin: 0 0 6px; font-size: 18px; color: var(--cyan); }
+		p { margin: 0 0 14px; }
+		.lead { color: var(--muted); max-width: 760px; }
+
+		.grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+		figure { margin: 0; background: #000; border: 4px solid #000; box-shadow: 0 0 0 3px var(--line); }
+		figcaption { background: var(--panel); padding: 8px 12px; font-size: 14px; color: var(--muted); }
+		figcaption b { color: var(--ink); }
+
+		.cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+		.card { background: var(--panel); border: 3px solid var(--line); padding: 18px; }
+		kbd { display: inline-block; min-width: 1.8em; padding: 1px 7px; background: var(--ink); color: #111; border-radius: 3px; border-bottom: 3px solid #888; font: 600 14px/1.5 ui-monospace, monospace; text-align: center; }
+
+		.split { display: grid; gap: 32px; grid-template-columns: 1fr 1fr; align-items: center; }
+		@media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+
+		.full { background: linear-gradient(135deg, #10207e, #000a40); border: 3px solid var(--yellow); box-shadow: 8px 8px 0 var(--red); padding: 26px; }
+		.full ul { margin: 0 0 18px; padding-left: 20px; }
+		.full li { margin: 4px 0; }
+
+		details { background: var(--panel); border: 3px solid var(--line); padding: 14px 18px; margin-bottom: 12px; }
+		summary { cursor: pointer; font-weight: 700; }
+		details p { margin: 10px 0 0; color: var(--muted); }
+
+		footer { padding: 32px 0 48px; font-size: 14px; color: var(--muted); text-align: center; }
+		footer p { margin: 6px 0; }
+	</style>
+</head>
+<body>
+	<header class="hero">
+		<div class="wrap">
+			<h1 class="pixel">Sonic PHP</h1>
+			<p class="sub">Le Sonic de la <strong>Master System</strong> (1991), refait en PHP et jouable
+				gratuitement dans le navigateur : <strong>les six zones, les boss, les niveaux spéciaux</strong>,
+				et des courses contre des bots.</p>
+			<div class="actions">
+				<a class="cta pixel" href="play/?back=../">▶ Jouer</a>
+				<a class="cta alt" href="https://sonic.mimichat.fr/" target="_blank" rel="noopener">La version complète, multijoueur en ligne ↗</a>
+			</div>
+			<p class="note">Ordinateur, téléphone ou manette · rien à installer · sans inscription</p>
+			<img class="screen" src="images/level-1.png" width="840" height="426"
+				alt="Sonic roulé en boule près des anneaux de Green Hill, un crabe sur le chemin" />
+		</div>
+	</header>
+	<div class="ground"></div>
+
+	<main>
+		<section id="jeu">
+			<div class="wrap split">
+				<div>
+					<h2>Le Sonic 8 bits, en entier</h2>
+					<p>Courir, sauter, ramasser les anneaux, casser les écrans à bonus, et arriver au panneau au bout
+						de chaque acte. <strong>Six zones de trois actes</strong>, un boss à la fin de chaque zone, les
+						<strong>niveaux spéciaux</strong> pleins d'anneaux et de ressorts, et la fin du jeu.</p>
+					<p>Le jeu garde vos <strong>meilleurs temps</strong> et un <strong>fantôme</strong> de votre
+						meilleure course, à battre la fois suivante. Dans les options : un filtre d'écran cathodique,
+						la vitesse PAL ou NTSC, le français ou l'anglais, et un juke-box des musiques.</p>
+				</div>
+				<figure>
+					<img src="images/map.png" width="840" height="426" loading="lazy" class="smooth"
+						alt="La carte de l'île avant Green Hill, avec les vies de Sonic" />
+					<figcaption><b>La carte de l'île</b>, entre deux zones.</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section id="zones">
+			<div class="wrap">
+				<h2>Les six zones</h2>
+				<p class="lead">Chaque zone a ses décors, ses pièges et son boss. Captures du jeu tel qu'il tourne
+					dans le navigateur.</p>
+				<div class="grid">
+					<figure><img src="images/level-1.png" width="840" height="426" loading="lazy" alt="Green Hill : collines en damier, palmiers et anneaux" /><figcaption><b>Green Hill</b> · acte 1</figcaption></figure>
+					<figure><img src="images/level-4.png" width="840" height="426" loading="lazy" alt="Bridge : des falaises, un pont de rondins au-dessus de l'eau" /><figcaption><b>Bridge</b> · acte 1</figcaption></figure>
+					<figure><img src="images/level-7.png" width="840" height="426" loading="lazy" alt="Jungle : une cascade au milieu de la forêt et des plates-formes" /><figcaption><b>Jungle</b> · acte 1</figcaption></figure>
+					<figure><img src="images/level-10.png" width="840" height="426" loading="lazy" alt="Labyrinth : des blocs verts sculptés, sous l'eau" /><figcaption><b>Labyrinth</b> · acte 1</figcaption></figure>
+					<figure><img src="images/level-13.png" width="840" height="426" loading="lazy" alt="Scrap Brain : une usine devant une ville au coucher du soleil" /><figcaption><b>Scrap Brain</b> · acte 1</figcaption></figure>
+					<figure><img src="images/level-16.png" width="840" height="426" loading="lazy" alt="Sky Base : des poutres bleues dans la nuit" /><figcaption><b>Sky Base</b> · acte 1</figcaption></figure>
+					<figure><img src="images/boss.png" width="609" height="309" loading="lazy" alt="Le docteur dans sa machine volante, au-dessus de Sonic, à la fin de Green Hill" /><figcaption><b>Le premier boss</b> · Green Hill, acte 3</figcaption></figure>
+					<figure><img src="images/special.png" width="840" height="426" loading="lazy" alt="Un niveau spécial : des étoiles, des anneaux et des ressorts" /><figcaption><b>Un niveau spécial</b> · anneaux et ressorts</figcaption></figure>
+				</div>
+			</div>
+		</section>
+
+		<section id="versus">
+			<div class="wrap split">
+				<figure>
+					<img src="images/versus.png" width="840" height="426" loading="lazy" class="smooth"
+						alt="Une course à quatre à Green Hill, le classement en haut à droite" />
+					<figcaption><b>Une course à quatre</b> contre trois bots.</figcaption>
+				</figure>
+				<div>
+					<h2>Contre les bots</h2>
+					<p>Dans <b>MULTIPLAYER</b>, affrontez de 1 à 4 coureurs pilotés par l'ordinateur (jusqu'à 5 pour
+						le drapeau), dans les zones du jeu, avec quatre règles :</p>
+					<p><b>Course</b> : le premier au panneau. <b>Drapeau</b> : le garder le plus longtemps.
+						<b>Anneaux</b> : en avoir le plus. <b>Deathmatch</b> : rester le dernier debout.</p>
+					<p>Envie d'affronter de vrais joueurs ? C'est dans la <a href="#complete">version complète</a>.</p>
+				</div>
+			</div>
+		</section>
+
+		<section id="complete">
+			<div class="wrap">
+				<div class="full">
+					<h2>La version complète : sonic.mimichat.fr</h2>
+					<p>Ce jeu vient de <strong>Sonic PHP</strong>, dont la version d'origine, complète, se joue sur
+						<a href="https://sonic.mimichat.fr/" target="_blank" rel="noopener">sonic.mimichat.fr</a>. Elle a
+						tout ce qu'il y a ici, et en plus :</p>
+					<ul>
+						<li>le <strong>multijoueur en ligne jusqu'à 6 joueurs</strong>, en course, drapeau, anneaux ou deathmatch ;</li>
+						<li>des salons publics, ou privés avec un code de 4 lettres ; les places libres sont prises par des bots ;</li>
+						<li>la discussion dans les salons et en jeu ;</li>
+						<li>les <strong>replays</strong> de chaque partie ;</li>
+						<li>une version ordinateur (PHP natif) qui rejoint les mêmes salons que les navigateurs.</li>
+					</ul>
+					<a class="cta pixel" href="https://sonic.mimichat.fr/" target="_blank" rel="noopener">Jouer en ligne ↗</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="commandes">
+			<div class="wrap">
+				<h2>Commandes</h2>
+				<div class="cards">
+					<div class="card">
+						<h3>Clavier</h3>
+						<p><kbd>←</kbd> <kbd>→</kbd> courir<br />
+							<kbd>↑</kbd> regarder en haut, <kbd>↓</kbd> se rouler en boule<br />
+							<kbd>Espace</kbd> sauter<br />
+							<kbd>Entrée</kbd> menus et pause<br />
+							<kbd>Échap</kbd> retour au titre</p>
+					</div>
+					<div class="card">
+						<h3>Manette</h3>
+						<p>Croix ou stick pour courir, <b>A</b>, <b>B</b>, <b>X</b> ou <b>Y</b> pour sauter,
+							<b>Start</b> pour les menus et la pause, <b>Select</b> pour revenir au titre.</p>
+					</div>
+					<div class="card">
+						<h3>Téléphone</h3>
+						<p>Une croix à gauche pour courir ; à droite <b>JUMP</b> pour sauter et <b>ROLL</b> pour la
+							boule, <b>START</b> pour la pause et <b>MENU</b> pour le titre. Tenez le téléphone à
+							l'horizontale.</p>
+					</div>
+				</div>
+				<p style="margin-top: 28px; text-align: center"><a class="cta pixel" href="play/?back=../">▶ Jouer maintenant</a></p>
+			</div>
+		</section>
+
+		<section id="fabrication">
+			<div class="wrap split">
+				<div>
+					<h2>Comment il a été fait</h2>
+					<p><strong>Sonic PHP</strong> est écrit entièrement en PHP : la physique, les objets, les ennemis,
+						les boss, la caméra et les bots. Les niveaux, les graphismes et leurs cycles de couleurs ont été
+						décodés depuis la cartouche d'origine, et la musique a été rendue en faisant tourner le
+						programme son Z80 du jeu dans un émulateur.</p>
+					<p>Ici, le jeu est porté sur le moteur <a href="https://github.com/davidnurdin/jumPhp" target="_blank" rel="noopener">JumPHP</a> :
+						le même code tourne dans une fenêtre sur ordinateur et dans le navigateur, où PHP est compilé
+						en <strong>WebAssembly</strong>. La logique du jeu est celle d'origine ; seuls l'affichage, le
+						son, les commandes et les sauvegardes passent par JumPHP.</p>
+					<p>Le code : <a href="https://github.com/davidnurdin/sonic-jumphp" target="_blank" rel="noopener">sonic-jumphp</a>
+						(cette version) et <a href="https://github.com/davidnurdin/sonicGamePhp" target="_blank" rel="noopener">sonicGamePhp</a>
+						(la version complète).</p>
+				</div>
+				<figure>
+					<img src="images/title.png" width="840" height="426" loading="lazy" class="smooth"
+						alt="L'écran titre, avec le logo et le menu START, MULTIPLAYER, OPTIONS, BEST TIMES" />
+					<figcaption><b>L'écran titre</b> et ses menus.</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section id="questions">
+			<div class="wrap">
+				<h2>Questions</h2>
+				<details>
+					<summary>Faut-il installer quelque chose ?</summary>
+					<p>Non : le jeu tourne dans le navigateur, sur ordinateur comme sur téléphone. Le premier chargement
+						télécharge environ 25 Mo (PHP en WebAssembly, les niveaux, les graphismes et la musique),
+						ensuite tout est en cache.</p>
+				</details>
+				<details>
+					<summary>Quelle différence avec la version complète ?</summary>
+					<p>La <a href="https://sonic.mimichat.fr/" target="_blank" rel="noopener">version complète</a> ajoute le
+						multijoueur en ligne jusqu'à 6 joueurs, les salons, la discussion et les replays. Celle-ci est
+						le même jeu porté sur JumPHP, pour jouer seul ou contre des bots.</p>
+				</details>
+				<details>
+					<summary>Mes temps sont-ils sauvegardés ?</summary>
+					<p>Oui : les meilleurs temps, les fantômes et les options restent dans votre navigateur.</p>
+				</details>
+				<details>
+					<summary>Peut-on y jouer hors du navigateur ?</summary>
+					<p>Oui, avec JumPHP et Docker : <code>bin/jumphp run sonic</code> ouvre le jeu dans une fenêtre, avec
+						le son. Voir le <a href="https://github.com/davidnurdin/sonic-jumphp" target="_blank" rel="noopener">dépôt GitHub</a>.</p>
+				</details>
+			</div>
+		</section>
+	</main>
+
+	<div class="ground"></div>
+	<footer>
+		<div class="wrap">
+			<p>Remake de fan, gratuit et sans publicité, fait avec <a href="https://github.com/davidnurdin/jumPhp" target="_blank" rel="noopener">JumPHP</a>.</p>
+			<p>Sonic the Hedgehog © SEGA 1991 ; version Master System développée par Ancient. Ce projet n'est affilié
+				ni à SEGA ni à Ancient ; les personnages, les graphismes, les niveaux et la musique appartiennent à
+				leurs auteurs.</p>
+		</div>
+	</footer>
+</body>
+</html>
